@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block head %}
+        <title>Blog management project</title>
+        {% endblock %}
+        <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+    </head>
+    <body>
+        <header>
+            <div id="header">
+                {% block header %}
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul>
+                        {% for message in messages %}
+                            <li>
+                            <h3>{{ message }}</h3>    
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                {% endblock %}
+            </div>
+        </header>
+
+        <nav>
+            <div id="nav">
+                {% block nav %}
+                    <a href="/">Home</a>  
+                    <a href="/article">Students</a>
+                    <a href="/comment">Grades</a>
+                    <a href="/logout">Logout</a>
+                    {% block nav_section %}
+                    {% endblock %}
+                {% endblock %}
+            </div>
+        </nav>
+
+        <main>
+            <div id="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+
+        <footer>
+            <div id="footer">
+                {% block footer %}
+                {% endblock %}
+            </div>
+        </footer>
+        
+    </body>
+</html>
