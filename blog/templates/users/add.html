@@ -1,0 +1,20 @@
+{% extends "user/base.html" %}
+
+{% block content %}
+<form action="#" method="POST">
+    <label for="username">Username: </label>
+    <input id="username" type="text" name ="username">
+    <br>
+    <label for="password">Password: </label>
+    <input id="password" type="password" name="password">
+    <br>
+    <label for="is_admin">Admin: </label>
+    <input id="is_admin" type="text" name="is_admin">
+    <br>
+    <label for="is_logged_in">Logged in: </label>
+    <input id="is_logged_in" type="text" name="is_logged_in">
+    <br>
+    <input type="submit">
+    <input type="reset">   
+</form>
+{% endblock %}

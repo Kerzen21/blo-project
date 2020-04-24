@@ -1,0 +1,7 @@
+{% extends "articles/base.html" %}
+{% block content %}
+
+    <a href="/articles/delete?id={{articleid}}&confirmation=1"><button>Yes, delete!</button> </a>
+    <a href="http://127.0.0.1:5000/articles/list"><button>No, return!</button></a>
+    
+{% endblock %}

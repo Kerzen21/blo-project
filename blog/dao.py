@@ -1,9 +1,22 @@
 import sqlite3
-
+import os
 from .models import User, AnonymousUser, Article, Comment
 
 db_filename = "database.sqlite3"    
-db_create_script = "blog.sql"
+
+
+blog_path = __file__
+
+blog_split = []
+
+blog_split = blog_path.split(os.path.sep)
+blog_split.pop(-1)
+blog_split.append("blog.sql")
+seperator = os.path.sep
+blog_final_path = seperator.join(blog_split)
+
+
+db_create_script = str(blog_final_path)
 
 def get_db_connection(db_filename):
     return sqlite3.connect(db_filename, check_same_thread=False)
@@ -68,7 +81,7 @@ class DAO(object): #Data access object
     def get_connection(cls) -> sqlite3.Connection:
         return DBManager.get_connection()
 
-class UserDAO(DAO):
+class UserDAO(DAO):  #dao.UserDAO.get_from_login(username, password) für Web.py
     @classmethod
     def get(cls, userid):
         con = cls.get_connection()
@@ -121,27 +134,56 @@ class UserDAO(DAO):
             all_users.append(user)
         return all_users
 
-#AnonymousUser ersetzt User überall wenn kein User eingeloggt ist und darf nur Kommentare hinzufügen (+ Articles/Comments sehen).
-#
-#Er wird z.B. gebraucht, um  "if user is None bzw. if user is not None: ..." zu vermeiden.
-#
-#Anstatt:
-#"""
-#user = session.get("user")
-#if user is not None and user.is_logged_in:
-#    do_something
-#else:
-#    do_anotherthing
-#    
-#"""
-#
-#hätte man:
-#"""
-#user = session.get("user", get_anonymous_user())
-#if user.is_logged_in:
-#    do_something
-#else:
-#    do_anotherthing
-#"""
-#
+class ArticleDAO(DAO):  #articleid, title, message , keywords, date
+    @classmethod
+    def get(cls, articleid):
+        con = cls.get_connection()
+        res = do_select(con, "SELECT articleid, title, message , keywords, date FROM Articles WHERE articleid=?", [articleid])
+        if res is None:
+            return None
+        title = res[1]
+        message = res[2]
+        keywords = res[3]
+        date = res[4]
+        article = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date)
+        return article
 
+    @classmethod
+    def save(cls, article:Article):
+        con = cls.get_connection()
+        if article.articleid is None:
+            with con:   
+                new_id = do_insert(con, "INSERT INTO Articles(title, message , keywords, date) VALUES(?, ?, ?, ?)",[article.title, article.message, article.keywords, article.date])
+                article.articleid = new_id
+        else:
+            with con:
+                do_update(con,"UPDATE Articles SET title=?, message=?, keywords=? , date=? WHERE articleid=?", [article.title, article.message, article.keywords, article.date])
+    
+    @classmethod
+    def delete(cls, article):
+        con = cls.get_connection()
+        with con:
+            if isinstance(article, Article):
+                articleid = article.articleid
+                article.articleid = None
+            else:
+                articleid = article
+            do_delete(con, "DELETE FROM Articles WHERE articleid=?", [articleid])
+
+    @classmethod
+    def get_all(cls):
+        con = cls.get_connection()
+        all_articles=[]
+        article_rows = do_select(con, "SELECT title, message , keywords, date FROM Articles", fetchall=True)
+        for article_row in article_rows:
+            articleid = article_row[0]
+            title = article_row[1]
+            message = article_rows[2]
+            keywords = article_rows[3]
+            date = article_row[4]
+
+            article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date)
+            all_articles.append(article)
+        return all_articles
+        
+        

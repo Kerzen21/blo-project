@@ -1,0 +1,20 @@
+{% extends "articles/base.html" %}
+
+{% block content %}
+<form action="#" method="POST">
+    <label for="title">Title: </label>
+    <input id="title" type="text" name ="title">
+    <br>
+    <label for="message">Password: </label>
+    <input id="message" type="text" name="message">
+    <br>
+    <label for="keywords">Admin: </label>
+    <input id="keywords" type="text" name="keywords">
+    <br>
+    <label for="date">Logged in: </label>
+    <input id="date" type="text" name="date">
+    <br>
+    <input type="submit">
+    <input type="reset">   
+</form>
+{% endblock %}

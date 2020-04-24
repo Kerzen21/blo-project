@@ -1,3 +1,5 @@
+import time
+
 class User(object):
     def __init__(self, username, password , is_admin, is_logged_in, userid=None):
         self.username = username 
@@ -28,11 +30,12 @@ class AnonymousUser(object):
         
 
 class Article(object):
-    def __init__(self, title, message , keywords, date, articleid=None): # Date in written in EU, e.g.: 13/04/2020
+    def __init__(self, title, message , keywords, userid, date=None, articleid=None): # Date in written in EU, e.g.: 13/04/2020
         self.title = title 
         self.message =  message 
         self.keywords = keywords 
-        self.date = date
+        self.date = date #TODO: mit time module Date setzen
+        self.userid = userid
         self.articleid = articleid
 
     def __str__(self):

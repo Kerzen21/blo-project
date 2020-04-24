@@ -1,0 +1,17 @@
+/* body {
+    background: #ff01aa;
+} */
+
+#nav {
+    background: lightgray;
+}
+
+.student_list_item, .grade_list_item, .teacher_list_item, .subject_list_item {
+    background: darkgray;
+    display: inline-block;
+}
+
+
+body main div {
+    background: yellow;
+}
