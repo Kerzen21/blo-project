@@ -85,7 +85,7 @@ class UserDAO(DAO):  #dao.UserDAO.get_from_login(username, password) für Web.py
     @classmethod
     def get(cls, userid):
         con = cls.get_connection()
-        res = do_select(con, "SELECT userid , username, password, is_admin, is_logged_in FROM Students WHERE userid=?", [userid])
+        res = do_select(con, "SELECT userid , username, password, is_admin, is_logged_in FROM Users WHERE userid=?", [userid])
         if res is None:
             return None
         username = res[1]
@@ -133,6 +133,21 @@ class UserDAO(DAO):  #dao.UserDAO.get_from_login(username, password) für Web.py
             user  = User(userid=userid, username=username, password=password, is_admin=is_admin, is_logged_in=is_logged_in)
             all_users.append(user)
         return all_users
+
+    @classmethod
+    def get_from_login(cls, username, password):
+        con = cls.get_connection()
+        res = do_select(con, "SELECT username, password FROM Users WHERE username=?", [username])
+        if res is None:
+            return False
+        else:
+            res_password = res[1]
+            if password == res_password:
+                return True
+            else:
+                return False
+
+        
 
 class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     @classmethod

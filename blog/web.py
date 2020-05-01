@@ -32,11 +32,26 @@ logindata = dict()
 #TODO: admin_password is connected with username admin
 if admin_pwd:
     logindata["Tim"] = get_hash(admin_pwd)
+    #testpersona:
+    admin = models.User("Tim", admin_pwd, True, False)
+    dao.UserDAO.save(admin)
+
+#####
+    import sqlite3   # Registration
+
+    try:
+        dao.UserDAO.save(admin)
+    except sqlite3.IntegrityError:
+        print("The user is already available in the database!!!")
+#####
+
+
 
 print(logindata)
 
 
 LOGGED_IN_KEY = "IS_LOGGED_IN"
+
 
 
 @app.route('/login', methods=["POST", "GET"])
@@ -48,27 +63,34 @@ def login():
         password = request.form.get("password", "")
 
         dao.UserDAO.get_from_login(username, password)
-        if username and get_hash(password) in dao.UserDAO.get_from_login(username, password): #IN DAO dao.UserDAO.get_from_login(username, password)
+        if  dao.UserDAO.get_from_login(username, password): 
         
-                flash("Login succesfull")
-                session[LOGGED_IN_KEY] = True
-                print(request.args, "but going back to the homepage")
-                next_url = request.args.get("next", "/")
+            flash("Login succesfull")
+            session[LOGGED_IN_KEY] = True
+            print(request.args, "but going back to the homepage")
+            next_url = request.args.get("next", "/")
 
-                return redirect(next_url)
-            else:
-                flash("Username or Password invalid")
+            return redirect(next_url)
         else:
             flash("Username or Password invalid")
         return redirect(url_for("login", **request.args))
 
 
-#@app.route('/register')!!!!!!!!!!!!!!!!!!
-
-
-
-
-print(dao.UserDAO.get_all())
+@app.route('/register')
+def register():
+    if request.method == "GET":
+        return render_template("register.html")     #Fertig machen und dann mit dao.USerDAO.save(User) in der DB speichern TODO:
+    else:
+        username = request.form.get("username", "")
+        password1 = request.form.get("password1", "")
+        password2 = request.form.get("password2", "")
+    #     import sqlite3   # Registration
+#
+    #try:
+    #    dao.UserDAO.save(admin)
+    #except sqlite3.IntegrityError:
+    #    print("The user is already available in the database!!!")
+#
 
 def login_required(f):
     @wraps(f)
@@ -116,6 +138,14 @@ def user_add_article():
 #     comment2,
 #     ...
 # ]
+
+
+@app.route("/articles")
+@login_required
+def articles_index():
+    return render_template("articles/base.html")
+
+
 
 @app.route("/articles/<int:articleid>/edit", methods=["GET", "POST"])
 @login_required       

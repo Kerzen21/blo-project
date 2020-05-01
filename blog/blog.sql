@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 	`is_logged_in`	INTEGER,
 	PRIMARY KEY(`userid`)
 );
-
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_username ON Users (username);
 
 CREATE TABLE IF NOT EXISTS `Article` (
 	`articleid`	INTEGER,
