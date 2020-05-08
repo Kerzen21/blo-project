@@ -30,11 +30,11 @@ class AnonymousUser(object):
         
 
 class Article(object):
-    def __init__(self, title, message , keywords, userid, date=None, articleid=None): # Date in written in EU, e.g.: 13/04/2020
+    def __init__(self, title, message , keywords, userid, date, articleid=None): # Date in written in EU, e.g.: 13/04/2020
         self.title = title 
         self.message =  message 
         self.keywords = keywords 
-        self.date = date #TODO: mit time module Date setzen
+        self.date = date 
         self.userid = userid
         self.articleid = articleid
 

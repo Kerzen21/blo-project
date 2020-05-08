@@ -6,6 +6,8 @@ from . import dao
 import random
 import string
 import os
+import time
+import datetime 
 
 def randomString(stringLength=20):
     letters = string.ascii_lowercase
@@ -54,19 +56,20 @@ LOGGED_IN_KEY = "IS_LOGGED_IN"
 
 
 
-@app.route('/login', methods=["POST", "GET"])
+@app.route('/login', methods=["POST", "GET"])   #UserID nehmen, und damit übeerprüfen ob man in List.html editieren bzw. deleten darf. Falls article ID mit USer ID übereinstimmt, darf man! Mit comment weiter machen fallss fertig
 def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
+        global username
         username = request.form.get("username", "")
         password = request.form.get("password", "")
-
+        
         dao.UserDAO.get_from_login(username, password)
         if  dao.UserDAO.get_from_login(username, password): 
         
             flash("Login succesfull")
-            session[LOGGED_IN_KEY] = True
+            session[LOGGED_IN_KEY] = True   #sollte mit session.get geholt werden
             print(request.args, "but going back to the homepage")
             next_url = request.args.get("next", "/")
 
@@ -76,7 +79,8 @@ def login():
         return redirect(url_for("login", **request.args))
 
 
-@app.route('/register')
+
+@app.route('/register', methods=["POST", "GET"])
 def register():
     if request.method == "GET":
         return render_template("register.html")     #Fertig machen und dann mit dao.USerDAO.save(User) in der DB speichern TODO:
@@ -84,13 +88,20 @@ def register():
         username = request.form.get("username", "")
         password1 = request.form.get("password1", "")
         password2 = request.form.get("password2", "")
-    #     import sqlite3   # Registration
-#
-    #try:
-    #    dao.UserDAO.save(admin)
-    #except sqlite3.IntegrityError:
-    #    print("The user is already available in the database!!!")
-#
+        import sqlite3
+        if password1 == password2:   
+            try: 
+                user = models.User(username, password1, is_logged_in = False, is_admin = False)
+                dao.UserDAO.save(user)
+                session[LOGGED_IN_KEY] = False
+                flash("Registration succesfull")
+                
+                return redirect(url_for("login", **request.args))
+            except sqlite3.IntegrityError:
+                    flash("The user is already available in the database!!!")
+        else:
+            flash("The Passwords do not match!")
+            return redirect("/register")
 
 def login_required(f):
     @wraps(f)
@@ -101,6 +112,10 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
+@app.route("/articles/list", methods=["GET"])
+def articles_list():
+    return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
 
 
 @app.route("/", methods=["GET"])
@@ -120,24 +135,20 @@ def user_add_article():
         return render_template('/articles/add.html', users=users)
     else:
         # should extract username from the session / user in the session login
-        logindata = request.form.get("username", "")
+        
+        userid = dao.HelperDAO.userid_logged_in(username)
         title = request.form.get("title", "")
         message = request.form.get("message", "")
         keywords = request.form.get("keywords", "")
-        article = models.Article(logindata, title, message, keywords)
+        today = datetime.date.today()
+        date = today.strftime("%d/%m/%Y")
+        
+        article = models.Article(title, message, keywords, userid, str(date))
         dao.ArticleDAO.save(article)
         flash(f"The Article has been posted!")
         print(request.form) 
-        return redirect("/articles/list")
+        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
 
-# /articles/1
-# [title], [author],[date]
-# [message]
-# [
-#     comment1,
-#     comment2,
-#     ...
-# ]
 
 
 @app.route("/articles")
@@ -158,9 +169,13 @@ def user_edit_article(articleid):
         article_message = request.form.get("message", "")
         article_keywords = request.form.get("keywords", "")
         article = models.Student(article_title, article_message, article_keywords, article_id)
-        dao.StudentDAO.save(article)
-        flash(f"The Article with id <{article_id}> has been edited!") 
-        return redirect("/articles/list")
+
+        if dao.HelperDAO.userid_article(article_id) == dao.HelperDAO.userid_logged_in(username):
+            dao.StudentDAO.save(article)
+            flash(f"The Article with id <{article_id}> has been edited!")
+        else:
+            flash(f"The Article with id <{article_id}> is not yours!") 
+        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
 
 @app.route("/articles/delete")       
 @login_required
@@ -168,10 +183,14 @@ def articles_delete():
     articleid = request.args.get("id")
     if 'confirmation' in request.args:
         article = dao.ArticleDAO.get(articleid)
-        dao.ArticleDAO.delete(article)
-        flash(f"The Article with id <{articleid}> has been deleted!")
 
-        return redirect("/articles/list")
+        if dao.HelperDAO.userid_article(articleid) == dao.HelperDAO.userid_logged_in(username):
+            dao.ArticleDAO.delete(article)
+            flash(f"The Article with id <{articleid}> has been deleted!")
+        else:
+            flash(f"The Article with id <{articleid}> is not yours!") 
+        
+        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
     else:
         return render_template("articles/delete.html", articleid=articleid)
 

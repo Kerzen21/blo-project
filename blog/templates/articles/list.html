@@ -1,13 +1,16 @@
 {% extends "articles/base.html" %}
 {% block content %}
-    {% if grades %}
-        {% for grade in grades %}
-            <div class="article_list_item">
-                {{article}} <a href="/articles/edit?id={{article.articleid}}"><img src="{{url_for('static', filename='images/edit-icon.png')}}" alt="Edit"></a>  <a href="/articles/delete?id={{article.articleid}}"><img src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
-            </div>
-        {% endfor %} 
+{% if articles %}
+{% for article in articles %}
+<div class="article_list_item">
+    {{article}} <a href="/articles/edit?id={{article.articleid}}"><img
+            src="{{url_for('static', filename='images/edit-icon.png')}}" alt="Edit"></a> <a
+        href="/articles/delete?id={{article.articleid}}"><img
+            src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+</div>
+{% endfor %}
 
-    {% else %}
-        No existing grades
-    {% endif %}
+{% else %}
+No existing Article
+{% endif %}
 {% endblock %}

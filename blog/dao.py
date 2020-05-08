@@ -153,26 +153,32 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     @classmethod
     def get(cls, articleid):
         con = cls.get_connection()
-        res = do_select(con, "SELECT articleid, title, message , keywords, date FROM Articles WHERE articleid=?", [articleid])
+        res = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles WHERE articleid=?", [articleid])
         if res is None:
             return None
         title = res[1]
         message = res[2]
         keywords = res[3]
         date = res[4]
-        article = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date)
+        userid = res[5]
+        article = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
         return article
 
     @classmethod
     def save(cls, article:Article):
         con = cls.get_connection()
+        fields = ['title', 'message', 'keywords', 'date', 'userid']
+        for field in fields:
+            value = getattr(article, field)
+            print(field, type(value), value)
+
         if article.articleid is None:
             with con:   
-                new_id = do_insert(con, "INSERT INTO Articles(title, message , keywords, date) VALUES(?, ?, ?, ?)",[article.title, article.message, article.keywords, article.date])
+                new_id = do_insert(con, "INSERT INTO Articles(title, message , keywords, date, userid) VALUES(?, ?, ?, ?, ?)",[article.title, article.message, article.keywords, article.date, article.userid])
                 article.articleid = new_id
         else:
             with con:
-                do_update(con,"UPDATE Articles SET title=?, message=?, keywords=? , date=? WHERE articleid=?", [article.title, article.message, article.keywords, article.date])
+                do_update(con,"UPDATE Articles SET title=?, message=?, keywords=? , date=?, userid=? WHERE articleid=?", [article.title, article.message, article.keywords, article.date, article.userid])
     
     @classmethod
     def delete(cls, article):
@@ -189,16 +195,35 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     def get_all(cls):
         con = cls.get_connection()
         all_articles=[]
-        article_rows = do_select(con, "SELECT title, message , keywords, date FROM Articles", fetchall=True)
+        article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles", fetchall=True)
         for article_row in article_rows:
             articleid = article_row[0]
             title = article_row[1]
-            message = article_rows[2]
-            keywords = article_rows[3]
+            message = article_row[2]
+            keywords = article_row[3]
             date = article_row[4]
-
-            article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date)
+            userid = article_row[5]
+            article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
             all_articles.append(article)
         return all_articles
         
-        
+
+
+class HelperDAO(DAO):  
+    @classmethod
+    def userid_article(cls, article_id):
+        con = cls.get_connection()
+        userid_article_tuple = do_select(con, "SELECT userid FROM Articles WHERE articleid=?", [article_id])
+        if userid_article_tuple is None:
+            return None
+        userid_article = userid_article_tuple[0]
+        return userid_article
+
+    @classmethod
+    def userid_logged_in(cls, username):
+        con = cls.get_connection()
+        userid_tuple = do_select(con, "SELECT userid FROM Users WHERE username=?", [username])
+        userid_logged_in = userid_tuple[0]
+        print(userid_logged_in)
+        return userid_logged_in
+    

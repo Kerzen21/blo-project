@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_username ON Users (username);
 
-CREATE TABLE IF NOT EXISTS `Article` (
+CREATE TABLE IF NOT EXISTS `Articles` (
 	`articleid`	INTEGER,
 	`userid` INTEGER,
 	`title`	TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `Article` (
 -- userid : 4
 
 
-CREATE TABLE IF NOT EXISTS `Comment` (
+CREATE TABLE IF NOT EXISTS `Comments` (
 	`commentid` INTEGER,
 	`articleid` INTEGER,
 	`userid` INTEGER,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `Comment` (
 	PRIMARY KEY(`commentid`),
 	FOREIGN KEY (userid) REFERENCES User(userid) ON DELETE SET NULL
 	FOREIGN KEY (userid) REFERENCES User(userid) ON UPDATE CASCADE
-	FOREIGN KEY (articleid) REFERENCES Article(articleid) ON DELETE CASCADE
-	FOREIGN KEY (articleid) REFERENCES Article(articleid) ON UPDATE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON DELETE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON UPDATE CASCADE
 );
 COMMIT;
