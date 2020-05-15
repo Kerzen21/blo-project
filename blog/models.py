@@ -37,9 +37,10 @@ class Article(object):
         self.date = date 
         self.userid = userid
         self.articleid = articleid
+        self.secretfield = None
 
     def __str__(self):
-        return "Article<" + str(self.articleid) + ": " + str(self.title) + " " + str(self.message) + " - " + str(self.keywords) + " - " + str(self.date) + ">"
+        return "Article<" + str(self.articleid) + ": " + str(self.userid) + " - " + str(self.title) + " " + str(self.message) + " - " + str(self.keywords) + " - " + str(self.date) + ">"
     def __repr__(self):
         return self.__str__()
 
@@ -49,9 +50,11 @@ class Comment(object):
         self.author = author 
         self.message =  message 
         self.date = date
-        self.commentid = commentid	
+        self.commentid = commentid
 
     def __str__(self):
         return "Comment<" + str(self.commentid) + ": " + str(self.author) + " " + str(self.message) + " - " + str(self.date) + ">"
     def __repr__(self):
         return self.__str__()
+    
+

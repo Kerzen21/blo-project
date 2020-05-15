@@ -61,7 +61,6 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
-        global username
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         
@@ -70,8 +69,10 @@ def login():
         
             flash("Login succesfull")
             session[LOGGED_IN_KEY] = True   #sollte mit session.get geholt werden
+            session["user"] = {"username" : username, "userid" : dao.HelperDAO.userid_logged_in(username)}
             print(request.args, "but going back to the homepage")
             next_url = request.args.get("next", "/")
+
 
             return redirect(next_url)
         else:
@@ -99,6 +100,7 @@ def register():
                 return redirect(url_for("login", **request.args))
             except sqlite3.IntegrityError:
                     flash("The user is already available in the database!!!")
+                    return render_template("register.html")
         else:
             flash("The Passwords do not match!")
             return redirect("/register")
@@ -115,7 +117,7 @@ def login_required(f):
 
 @app.route("/articles/list", methods=["GET"])
 def articles_list():
-    return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
+    return render_template("articles/list.html", articles = dao.ArticleDAO.get_all(), dao = dao)
 
 
 @app.route("/", methods=["GET"])
@@ -135,8 +137,7 @@ def user_add_article():
         return render_template('/articles/add.html', users=users)
     else:
         # should extract username from the session / user in the session login
-        
-        userid = dao.HelperDAO.userid_logged_in(username)
+        userid = dao.HelperDAO.userid_logged_in(session["user"]["username"])
         title = request.form.get("title", "")
         message = request.form.get("message", "")
         keywords = request.form.get("keywords", "")
@@ -147,8 +148,7 @@ def user_add_article():
         dao.ArticleDAO.save(article)
         flash(f"The Article has been posted!")
         print(request.form) 
-        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
-
+        return redirect("/articles/list")
 
 
 @app.route("/articles")
@@ -161,21 +161,32 @@ def articles_index():
 @app.route("/articles/<int:articleid>/edit", methods=["GET", "POST"])
 @login_required       
 def user_edit_article(articleid):
+    
     if request.method == "GET":
         return render_template("articles/edit.html", article=dao.ArticleDAO.get(articleid))
     else: 
-        article_id = request.form.get("id", "")
-        article_title = request.form.get("title", "")
-        article_message = request.form.get("message", "")
-        article_keywords = request.form.get("keywords", "")
-        article = models.Student(article_title, article_message, article_keywords, article_id)
 
-        if dao.HelperDAO.userid_article(article_id) == dao.HelperDAO.userid_logged_in(username):
-            dao.StudentDAO.save(article)
-            flash(f"The Article with id <{article_id}> has been edited!")
+        article = dao.ArticleDAO.get(articleid)
+        article.title = request.form.get("title", "")
+        article.message = request.form.get("message", "")
+        article.keywords = request.form.get("keywords", "")
+
+        
+        
+
+        
+        print("Article Nach Hinzufügung zu Models", article.userid)
+        if dao.HelperDAO.vgl(articleid, session["user"]["username"]):
+            dao.ArticleDAO.save(article)
+            flash(f"The Article with id <{articleid}> has been edited!")
+            return redirect("/articles/list")
         else:
-            flash(f"The Article with id <{article_id}> is not yours!") 
-        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
+            flash(f"The Article with id <{articleid}> is not yours!") 
+        return redirect("/articles/list")
+#Statt zu speicehern wird ein Neuer erstellt, also 165+ anschauen!
+
+
+
 
 @app.route("/articles/delete")       
 @login_required
@@ -183,14 +194,13 @@ def articles_delete():
     articleid = request.args.get("id")
     if 'confirmation' in request.args:
         article = dao.ArticleDAO.get(articleid)
-
-        if dao.HelperDAO.userid_article(articleid) == dao.HelperDAO.userid_logged_in(username):
+        if dao.HelperDAO.vgl(articleid, session["user"]["username"]):
             dao.ArticleDAO.delete(article)
             flash(f"The Article with id <{articleid}> has been deleted!")
+            return redirect("/articles/list")
         else:
             flash(f"The Article with id <{articleid}> is not yours!") 
-        
-        return render_template("articles/list.html", articles = dao.ArticleDAO.get_all())
+            return redirect("/articles/list")
     else:
         return render_template("articles/delete.html", articleid=articleid)
 

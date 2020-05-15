@@ -151,7 +151,7 @@ class UserDAO(DAO):  #dao.UserDAO.get_from_login(username, password) für Web.py
 
 class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     @classmethod
-    def get(cls, articleid):
+    def get(cls, articleid, include_secretfield=False):
         con = cls.get_connection()
         res = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles WHERE articleid=?", [articleid])
         if res is None:
@@ -161,7 +161,10 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
         keywords = res[3]
         date = res[4]
         userid = res[5]
+        secret_field = None
         article = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
+        if include_secretfield:
+            article.secretfield = UserDAO.get(userid).username
         return article
 
     @classmethod
@@ -178,7 +181,7 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
                 article.articleid = new_id
         else:
             with con:
-                do_update(con,"UPDATE Articles SET title=?, message=?, keywords=? , date=?, userid=? WHERE articleid=?", [article.title, article.message, article.keywords, article.date, article.userid])
+                do_update(con,"UPDATE Articles SET title=?, message=?, keywords=? , date=?, userid=? WHERE articleid=?", [article.title, article.message, article.keywords, article.date, article.userid, article.articleid])
     
     @classmethod
     def delete(cls, article):
@@ -206,8 +209,8 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
             article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
             all_articles.append(article)
         return all_articles
-        
 
+                
 
 class HelperDAO(DAO):  
     @classmethod
@@ -226,4 +229,12 @@ class HelperDAO(DAO):
         userid_logged_in = userid_tuple[0]
         print(userid_logged_in)
         return userid_logged_in
+
+    @classmethod 
+    def vgl(cls, article_id, username):
+        if HelperDAO.userid_article(article_id) == HelperDAO.userid_logged_in(username):
+            return True
+
+        else:
+            return False
     

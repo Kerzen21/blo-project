@@ -1,18 +1,15 @@
-{% extends "grades/base.html" %}
+{% extends "articles/base.html" %}
 
 {% block content %}
-<form action="#" method="POST">      
-    <input id="id" type="hidden" name ="id" value="{{article.articleid}}">
+<form action="#" method="POST">
+    <input id="id" type="hidden" name="id" value="{{article.articleid}}">
     <br>
-    <label for="title">Title: </label>      
-    <input id="title" type="text" name ="title" value="{{article.title}}">
+    <label for="title">Title: </label>
+    <input id="title" type="text" name="title" value="{{article.title}}">
     <br>
     <label for="message">Message: </label>
     <input id="message" type="text" name="message" value="{{article.message}}">
     <br>
-    <label for="keywords">Keywords: </label>
-    <input id="keywords" type="text" name="keywords" value="{{article.keywords}}">
-    <br>
     <input type="submit">
     <input type="reset">
-{% endblock %}
+    {% endblock %}
