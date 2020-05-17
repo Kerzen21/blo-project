@@ -151,7 +151,7 @@ class UserDAO(DAO):  #dao.UserDAO.get_from_login(username, password) für Web.py
 
 class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     @classmethod
-    def get(cls, articleid, include_secretfield=False):
+    def get(cls, articleid, include_all=False):
         con = cls.get_connection()
         res = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles WHERE articleid=?", [articleid])
         if res is None:
@@ -161,10 +161,9 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
         keywords = res[3]
         date = res[4]
         userid = res[5]
-        secret_field = None
         article = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
-        if include_secretfield:
-            article.secretfield = UserDAO.get(userid).username
+        if include_all:
+            article.author = UserDAO.get(userid).username
         return article
 
     @classmethod
@@ -194,8 +193,15 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
                 articleid = article
             do_delete(con, "DELETE FROM Articles WHERE articleid=?", [articleid])
 
+
+# userid|username|....| #Users
+
+# articleid|userid|title|...| #Articles
+
+# ==> userid|username|...|articleid|title|...| #User x Articles
+
     @classmethod
-    def get_all(cls):
+    def get_all(cls, include_all):
         con = cls.get_connection()
         all_articles=[]
         article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles", fetchall=True)
@@ -208,6 +214,9 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
             userid = article_row[5]
             article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
             all_articles.append(article)
+            #TODO: use JOIN? (Articles x Users)
+            if include_all:
+                article.author = UserDAO.get(userid).username
         return all_articles
 
                 

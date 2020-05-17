@@ -2,16 +2,24 @@
 {% block content %}
 {% if articles %}
 {% for article in articles %}
-<div class="article_list_item">
-    {% if session.get("user") %}
-    {{article.}}
-    {% if article.userid == session["user"]["userid"] %}
 
+<div class="article_list_item">
+
+
+{{dao.ArticleDAO.get(article.articleid, include_secretfield = True)}}
+<b> | </b>
+{{article.title}}
+<b> | </b>
+{{article.date}}
+
+    {% if session.get("user") %}
+    {% if article.userid == session["user"]["userid"] %}
     <a href="/articles/{{article.articleid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
             alt="Edit"></a>
 
     <a href="/articles/delete?id={{article.articleid}}"><img
             src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+
     {% endif %}
     {% endif %}
 </div>

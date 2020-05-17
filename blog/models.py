@@ -37,7 +37,8 @@ class Article(object):
         self.date = date 
         self.userid = userid
         self.articleid = articleid
-        self.secretfield = None
+        # author is not saved in the database!!!
+        self.author = None
 
     def __str__(self):
         return "Article<" + str(self.articleid) + ": " + str(self.userid) + " - " + str(self.title) + " " + str(self.message) + " - " + str(self.keywords) + " - " + str(self.date) + ">"

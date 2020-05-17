@@ -55,7 +55,6 @@ print(logindata)
 LOGGED_IN_KEY = "IS_LOGGED_IN"
 
 
-
 @app.route('/login', methods=["POST", "GET"])   #UserID nehmen, und damit übeerprüfen ob man in List.html editieren bzw. deleten darf. Falls article ID mit USer ID übereinstimmt, darf man! Mit comment weiter machen fallss fertig
 def login():
     if request.method == "GET":
@@ -203,6 +202,12 @@ def articles_delete():
             return redirect("/articles/list")
     else:
         return render_template("articles/delete.html", articleid=articleid)
+
+@app.route("/logout")      
+def logout():
+     session.clear()
+     flash("Succesfully logged out")
+     return redirect("/")
 
 
 if __name__ == "__main__":
