@@ -1,0 +1,31 @@
+{% extends "comments/base.html" %}
+{% block content %}
+{% if comments %}
+{% for comment in comments %}
+
+<div class="comment_list_item">
+
+
+{{comment.author}}
+<b> | </b>
+{{comment.title}}
+<b> | </b>
+{{comment.date}}
+
+    {% if session.get("user") %}
+    {% if comment.userid == session["user"]["userid"] %}
+    <a href="/comments/{{comment.commentid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
+            alt="Edit"></a>
+
+    <a href="/comments/delete?id={{comment.commentid}}"><img
+            src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+
+    {% endif %}
+    {% endif %}
+</div>
+{% endfor %}
+
+{% else %}
+No existing Comment
+{% endif %}
+{% endblock %}

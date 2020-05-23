@@ -201,7 +201,7 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
 # ==> userid|username|...|articleid|title|...| #User x Articles
 
     @classmethod
-    def get_all(cls, include_all):
+    def get_all(cls, include_all=True):
         con = cls.get_connection()
         all_articles=[]
         article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles", fetchall=True)
@@ -219,7 +219,68 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
                 article.author = UserDAO.get(userid).username
         return all_articles
 
-                
+
+class CommentDAO(DAO):  #author, message, date, commentid=None
+    @classmethod
+    def get(cls, commentid, include_all=False):
+        con = cls.get_connection()
+        res = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments WHERE commentid=?", [commentid])
+        if res is None:
+            return None
+        author = res[1]
+        message = res[2]
+        date = res[3]
+        userid = res[4]
+        articleid = res[5]
+        comment = Article(commentid=commentid, author=author, message=message, date=date, userid=userid, articleid=articleid)
+        if include_all:
+            comment.author = UserDAO.get(userid).author
+        return comment
+
+    @classmethod
+    def save(cls, comment:Comment):
+        con = cls.get_connection()
+        
+        if comment.commentid is None:
+            with con:   
+                new_id = do_insert(con, "INSERT INTO Comments(author, message, date, userid, articleid) VALUES(?, ?, ?, ?, ?)",[comment.author, comment.message, comment.date, comment.userid, comment.articleid])
+                comment.commentid = new_id
+        else:
+            with con:
+                do_update(con,"UPDATE Comments SET author=?, message=?, date=?, userid=?, articleid=? WHERE commentid=?", [comment.author, comment.message, comment.date, comment.userid, comment.articleid])
+    
+    @classmethod
+    def delete(cls, comment):
+        con = cls.get_connection()
+        with con:
+            if isinstance(comment, Comment):
+                commentid = comment.commentid
+                comment.commentid = None
+            else:
+                commentid = comment
+            do_delete(con, "DELETE FROM Comments WHERE commentid=?", [commentid])
+            
+    @classmethod
+    def get_all(cls, articleid=None, include_all=True):
+        con = cls.get_connection()
+        all_comments=[]
+        if articleid is None:
+            comment_rows = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments ", fetchall=True)
+        else:
+            comment_rows = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments WHERE articleid=?", [articleid], fetchall=True)
+        for comment_row in comment_rows:
+            commentid = comment_row[0]
+            author = comment_row[1]
+            message = comment_row[2]
+            date = comment_row[3]
+            userid = comment_row[4]
+            articleid = comment_row[5]
+            comment  = Article(commentid=commentid, author=author, message=message, date=date, userid=userid, articleid=articleid)
+            all_comments.append(comment)
+            if include_all:
+                comment.author = UserDAO.get(userid).username
+        return all_comments
+
 
 class HelperDAO(DAO):  
     @classmethod

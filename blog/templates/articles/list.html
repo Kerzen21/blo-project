@@ -6,12 +6,13 @@
 <div class="article_list_item">
 
 
-{{dao.ArticleDAO.get(article.articleid, include_secretfield = True)}}
+{{article.author}}
 <b> | </b>
 {{article.title}}
 <b> | </b>
 {{article.date}}
-
+<a href="/articles/{{article.articleid}}/view?"><img src="{{url_for('static', filename='images/view-icon.png')}}"
+        alt="View"></a>
     {% if session.get("user") %}
     {% if article.userid == session["user"]["userid"] %}
     <a href="/articles/{{article.articleid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"

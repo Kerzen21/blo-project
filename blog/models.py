@@ -47,10 +47,12 @@ class Article(object):
 
 
 class Comment(object):
-    def __init__(self, author, message, date,commentid=None): 
+    def __init__(self, author, message, date, userid, articleid, commentid=None): 
         self.author = author 
         self.message =  message 
         self.date = date
+        self.userid = userid
+        self.articleid = articleid
         self.commentid = commentid
 
     def __str__(self):

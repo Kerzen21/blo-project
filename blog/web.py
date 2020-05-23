@@ -203,6 +203,34 @@ def articles_delete():
     else:
         return render_template("articles/delete.html", articleid=articleid)
 
+
+
+
+
+@app.route("/articles/<int:articleid>/view/comments/add", methods=["GET", "POST"])   #ADDD COMMENT FERTIG MACHEN
+@login_required
+def user_add_comment(articleid):
+    if request.method == "GET": 
+        return render_template('/comments/add.html')
+    else:
+        # should extract username from the session / user in the session login
+        userid = dao.HelperDAO.userid_logged_in(session["user"]["username"])
+        title = request.form.get("title", "")
+        message = request.form.get("message", "")
+        keywords = request.form.get("keywords", "")
+        today = datetime.date.today()
+        date = today.strftime("%d/%m/%Y")
+        
+        article = models.Article(title, message, keywords, userid, str(date))
+        dao.ArticleDAO.save(article)
+        flash(f"The Article has been posted!")
+        print(request.form) 
+        return redirect("/articles/list")
+
+
+
+
+
 @app.route("/logout")      
 def logout():
      session.clear()
