@@ -47,8 +47,8 @@ class Article(object):
 
 
 class Comment(object):
-    def __init__(self, author, message, date, userid, articleid, commentid=None): 
-        self.author = author 
+    def __init__(self, message, date, userid, articleid, commentid=None): 
+        self.author = None 
         self.message =  message 
         self.date = date
         self.userid = userid

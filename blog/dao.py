@@ -204,7 +204,10 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
     def get_all(cls, include_all=True):
         con = cls.get_connection()
         all_articles=[]
-        article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles", fetchall=True)
+        if include_all == True:
+            article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, Articles.userid, username FROM Articles inner join Users on (Articles.userid=Users.userid)", fetchall=True)
+        else:
+            article_rows = do_select(con, "SELECT articleid, title, message , keywords, date, userid FROM Articles", fetchall=True)
         for article_row in article_rows:
             articleid = article_row[0]
             title = article_row[1]
@@ -213,10 +216,10 @@ class ArticleDAO(DAO):  #articleid, title, message , keywords, date
             date = article_row[4]
             userid = article_row[5]
             article  = Article(articleid=articleid, title=title, message=message, keywords=keywords, date=date, userid=userid)
+            if include_all == True:
+                article.author = article_row[6]
             all_articles.append(article)
-            #TODO: use JOIN? (Articles x Users)
-            if include_all:
-                article.author = UserDAO.get(userid).username
+            
         return all_articles
 
 
@@ -224,15 +227,14 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
     @classmethod
     def get(cls, commentid, include_all=False):
         con = cls.get_connection()
-        res = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments WHERE commentid=?", [commentid])
+        res = do_select(con, "SELECT commentid, message, date, userid, articleid FROM Comments WHERE commentid=?", [commentid])
         if res is None:
             return None
-        author = res[1]
-        message = res[2]
-        date = res[3]
-        userid = res[4]
-        articleid = res[5]
-        comment = Article(commentid=commentid, author=author, message=message, date=date, userid=userid, articleid=articleid)
+        message = res[1]
+        date = res[2]
+        userid = res[3]
+        articleid = res[4]
+        comment = Article(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
         if include_all:
             comment.author = UserDAO.get(userid).author
         return comment
@@ -243,11 +245,11 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
         
         if comment.commentid is None:
             with con:   
-                new_id = do_insert(con, "INSERT INTO Comments(author, message, date, userid, articleid) VALUES(?, ?, ?, ?, ?)",[comment.author, comment.message, comment.date, comment.userid, comment.articleid])
+                new_id = do_insert(con, "INSERT INTO Comments(message, date, userid, articleid) VALUES(?, ?, ?, ?)",[comment.message, comment.date, comment.userid, comment.articleid])
                 comment.commentid = new_id
         else:
             with con:
-                do_update(con,"UPDATE Comments SET author=?, message=?, date=?, userid=?, articleid=? WHERE commentid=?", [comment.author, comment.message, comment.date, comment.userid, comment.articleid])
+                do_update(con,"UPDATE Comments SET, message=?, date=?, userid=?, articleid=? WHERE commentid=?", [comment.message, comment.date, comment.userid, comment.articleid])
     
     @classmethod
     def delete(cls, comment):
@@ -265,20 +267,22 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
         con = cls.get_connection()
         all_comments=[]
         if articleid is None:
-            comment_rows = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments ", fetchall=True)
+            comment_rows = do_select(con, "SELECT commentid, message, date, userid, articleid FROM Comments ", fetchall=True)
         else:
-            comment_rows = do_select(con, "SELECT commentid, author, message, date, userid, articleid FROM Comments WHERE articleid=?", [articleid], fetchall=True)
+            comment_rows = do_select(con, "SELECT commentid, message, date, userid, articleid FROM Comments WHERE articleid=?", [articleid], fetchall=True)
         for comment_row in comment_rows:
             commentid = comment_row[0]
-            author = comment_row[1]
-            message = comment_row[2]
-            date = comment_row[3]
-            userid = comment_row[4]
-            articleid = comment_row[5]
-            comment  = Article(commentid=commentid, author=author, message=message, date=date, userid=userid, articleid=articleid)
+            message = comment_row[1]
+            date = comment_row[2]
+            userid = comment_row[3]
+            articleid = comment_row[4]
+            comment  = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
             all_comments.append(comment)
             if include_all:
-                comment.author = UserDAO.get(userid).username
+                if userid is None:
+                    comment.author = "Anonymous User"
+                else:
+                    comment.author = UserDAO.get(userid).username
         return all_comments
 
 

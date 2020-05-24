@@ -1,0 +1,15 @@
+{% extends "articles/base.html" %}
+{% block content %}
+{{article.author}}
+<b> | </b>
+{{article.title}}
+<b> | </b>
+{{article.date}}
+<br>
+{{article.message}}
+<br>
+<b>Comments:</b>
+<br>
+{{comments}}
+
+{% endblock %}
