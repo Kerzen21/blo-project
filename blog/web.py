@@ -8,6 +8,7 @@ import string
 import os
 import time
 import datetime 
+from . import utilities
 
 def randomString(stringLength=20):
     letters = string.ascii_lowercase
@@ -109,7 +110,6 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if not session.get(LOGGED_IN_KEY, False):
             return redirect(url_for("login", next=request.url))
-
         return f(*args, **kwargs)
     return decorated_function
 
@@ -139,7 +139,8 @@ def user_add_article():
         userid = dao.HelperDAO.userid_logged_in(session["user"]["username"])
         title = request.form.get("title", "")
         message = request.form.get("message", "")
-        keywords = request.form.get("keywords", "")
+        separator = ", "
+        keywords = separator.join(utilities.key_word_finder(message))
         today = datetime.date.today()
         date = today.strftime("%d/%m/%Y")
         
@@ -148,6 +149,20 @@ def user_add_article():
         flash(f"The Article has been posted!")
         print(request.form) 
         return redirect("/articles/list")
+
+
+
+
+#
+#in
+#how
+#and
+#when
+#if
+#or
+#the
+#it
+
 
 
 @app.route("/articles")

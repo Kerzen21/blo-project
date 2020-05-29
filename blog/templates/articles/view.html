@@ -8,8 +8,22 @@
 <br>
 {{article.message}}
 <br>
-<b>Comments:</b>
+Keywords:
 <br>
-{{comments}}
+{{article.keywords}}
+<br>
+<br>
+<b>Comments:</b>
+{% for comment in comments %}
+<br>
+{{comment.author}}
+<b> | </b>
+{{comment.message}}
+<b> | </b>
+{{comment.date}}
+{% endfor %}
+<br>
+
+<a href="/articles/{{article.articleid}}/view/comments/add"><button>Add Comment!</button> </a>
 
 {% endblock %}
