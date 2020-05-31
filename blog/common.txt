@@ -930,8 +930,7 @@ led
 pitch
 coat
 mass
-card
-band
+cardband
 rope
 slip
 win

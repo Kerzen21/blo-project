@@ -151,25 +151,34 @@ def user_add_article():
         return redirect("/articles/list")
 
 
+# web-browser --> get-method --> user input --> post-method --> final-result
 
+@app.route("/articles/search", methods=["GET", "POST"])
+def search_article():
+    if request.method == "GET":
+        keywords = request.form.get("keywords", "")
+        print("Keywords in GET: ", keywords)
+        return render_template("articles/search.html")
+    else:
+        keywords = request.form.get("keywords", "")
+        print("Keywords in POST: ", keywords)
+        print(keywords.split(" "))
+        matching_articles = dao.HelperDAO.search(keywords.split(" "))
+        print(matching_articles)
+        return render_template("articles/search.html", matching_articles = matching_articles)
 
-#
-#in
-#how
-#and
-#when
-#if
-#or
-#the
-#it
-
-
+        
 
 @app.route("/articles")
 @login_required
 def articles_index():
     return render_template("articles/base.html")
 
+
+#ICh suche: haus auto katze miete
+#1. Artikel: 15x Haus 15x Auto
+#3. Artikel: 10x Haus x Auto
+#2. Artikel: 5x (Haus auto katze miete)
 
 
 @app.route("/articles/<int:articleid>/edit", methods=["GET", "POST"])

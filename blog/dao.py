@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from .models import User, AnonymousUser, Article, Comment
+from . import utilities
 
 db_filename = "database.sqlite3"    
 
@@ -311,4 +312,24 @@ class HelperDAO(DAO):
 
         else:
             return False
-    
+
+    @classmethod
+    def search(cls, search_keywords):
+        """
+        :param search_keywords: list of strings!
+        returns: all matching articles (without repetition!)!
+        """
+        # title: 3-4x
+        # tags/keywords 2x
+        # text 1x
+        
+        matching_articles = []
+        #print("sk1: ", search_keywords)
+        for article in ArticleDAO.get_all():
+            #print("art.kw: ", article.keywords)
+            for keyword in search_keywords:
+                if keyword in article.keywords and article not in matching_articles:
+                    matching_articles.append(article)
+                    print(matching_articles)
+        return matching_articles
+        

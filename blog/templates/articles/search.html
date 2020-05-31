@@ -1,0 +1,51 @@
+{% extends "articles/base.html" %}
+
+{% block content %}
+<form action="#" method="POST">
+    <label for="keywords">Search Articles: </label>
+    <input id="keywords" type="text" name="keywords">
+    <br>
+    <input type="submit">
+    <input type="reset">
+</form>
+
+
+{% if matching_articles %}
+{% for article in  matching_articles %}
+
+<div class="article_list_item">
+
+
+{{article.author}}
+<b> | </b>
+{{article.title}}
+<b> | </b>
+{{article.date}}
+<a href="/articles/{{article.articleid}}/view?"><img src="{{url_for('static', filename='images/view-icon.png')}}"
+        alt="View"></a>
+    {% if session.get("user") %}
+    {% if article.userid == session["user"]["userid"] %}
+    <a href="/articles/{{article.articleid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
+            alt="Edit"></a>
+
+    <a href="/articles/delete?id={{article.articleid}}"><img
+            src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+
+    {% endif %}
+    {% endif %}
+</div>
+{% endfor %}
+
+{% else %}
+No existing Article
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
