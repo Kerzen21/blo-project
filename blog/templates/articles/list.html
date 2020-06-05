@@ -14,7 +14,7 @@
 <a href="/articles/{{article.articleid}}/view?"><img src="{{url_for('static', filename='images/view-icon.png')}}"
         alt="View"></a>
     {% if session.get("user") %}
-    {% if article.userid == session["user"]["userid"] %}
+    {% if article.userid == session["user"]["userid"] or session["user"]["is_admin"] == True %}
     <a href="/articles/{{article.articleid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
             alt="Edit"></a>
 

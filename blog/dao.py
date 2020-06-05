@@ -235,7 +235,7 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
         date = res[2]
         userid = res[3]
         articleid = res[4]
-        comment = Article(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
+        comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
         if include_all:
             comment.author = UserDAO.get(userid).author
         return comment
@@ -250,7 +250,7 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
                 comment.commentid = new_id
         else:
             with con:
-                do_update(con,"UPDATE Comments SET, message=?, date=?, userid=?, articleid=? WHERE commentid=?", [comment.message, comment.date, comment.userid, comment.articleid])
+                do_update(con, "UPDATE Comments SET message=?, date=?, userid=?, articleid=? WHERE commentid=?", [comment.message, comment.date, comment.userid, comment.articleid, comment.commentid])
     
     @classmethod
     def delete(cls, comment):
@@ -333,3 +333,11 @@ class HelperDAO(DAO):
                     print(matching_articles)
         return matching_articles
         
+    @classmethod
+    def userid_comment(cls, comment_id):
+        con = cls.get_connection()
+        userid_comment_tuple = do_select(con, "SELECT userid FROM Comments WHERE commentid=?", [comment_id])
+        if userid_comment_tuple is None:
+            return None
+        userid_comment = userid_comment_tuple[0]
+        return userid_comment

@@ -1,0 +1,8 @@
+{% extends "articles/base.html" %}
+{% block content %}
+
+<a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/delete?confirmation=1"><button>Yes,
+        delete!</button> </a>
+<a href="http://127.0.0.1:5000//articles/{{article.articleid}}/view"><button>No, return!</button></a>
+
+{% endblock %}

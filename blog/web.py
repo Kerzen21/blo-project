@@ -251,6 +251,49 @@ def user_add_comment(articleid):
         print(request.form) 
         return redirect("/articles/" + str(articleid) + "/view")
 
+@app.route("/articles/<int:articleid>/view/comments/<int:commentid>/edit", methods=["GET", "POST"])
+@login_required       
+def user_edit_comment(articleid, commentid):
+    
+    if request.method == "GET":
+        return render_template("comments/edit.html", article=dao.ArticleDAO.get(articleid) , comment=dao.CommentDAO.get(commentid))
+    else: 
+
+        comment = dao.CommentDAO.get(commentid)
+        comment.message = request.form.get("message", "")
+
+        
+        
+
+        if dao.HelperDAO.userid_comment(commentid) == dao.HelperDAO.userid_logged_in(session["user"]["username"]):
+            dao.CommentDAO.save(comment)
+            flash(f"The Comment with id <{commentid}> has been edited!")
+            return redirect("/articles/list")
+        else:
+            flash(f"The Comment with id <{commentid}> is not yours!") 
+            return redirect("/articles/" + str(articleid) + "/view/comments/")
+
+
+
+
+@app.route("/articles/<int:articleid>/view/comments/<int:commentid>/delete", methods=["GET", "POST"])      
+@login_required
+def comment_delete(articleid, commentid):
+    if request.method == "GET":
+        return render_template("comments/delete.html", article=dao.ArticleDAO.get(articleid) , comment=dao.CommentDAO.get(commentid))
+    else: 
+        comment = dao.CommentDAO.get(commentid)
+        if dao.HelperDAO.userid_comment(commentid) == dao.HelperDAO.userid_logged_in(session["user"]["username"]): 
+            if 'confirmation' in request.args:
+                dao.CommentDAO.delete(comment)
+                flash(f"The Comment with id <{commentid}> has been deleted!")
+        else:
+            flash(f"The Comment with id <{commentid}> is not yours!")
+        return redirect("/articles/" + str(articleid) + "/view/")
+
+
+
+
 @app.route("/articles/<int:articleid>/view", methods=["GET", "POST"])
 def article_view(articleid):
     if request.method == "GET":

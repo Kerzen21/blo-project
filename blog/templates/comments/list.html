@@ -14,7 +14,7 @@
 
     {% if session.get("user") %}
     {% if comment.userid == session["user"]["userid"] %}
-    <a href="/comments/{{comment.commentid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
+    <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
             alt="Edit"></a>
 
     <a href="/comments/delete?id={{comment.commentid}}"><img

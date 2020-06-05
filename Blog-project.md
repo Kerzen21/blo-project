@@ -2,7 +2,7 @@
 ## Blog Project!!!
 1. Create a blog-project repository
 
-1. Models:
+1. Models: done
     1. User
         - username
         - password
@@ -32,13 +32,13 @@
 
 1. Permissions:  
     A User can:  
-        - Article:  
+        - Article:  done
             - add a new article  
             - modify or delete his blogs  
         - Comment:  
             - add a new comment  
-            - modify or delete his comments  
-        - User(if is_admin is True):  
+            - modify or delete his comments   #TODO
+        - User(if is_admin is True):          #TODO
             - modify or delete a User  
             - modify or delete blogs  
             - modify or delete comments  
