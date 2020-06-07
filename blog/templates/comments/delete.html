@@ -1,8 +1,11 @@
-{% extends "articles/base.html" %}
-{% block content %}
+{% extends "comments/base.html" %}
+{% block comment %}
 
-<a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/delete?confirmation=1"><button>Yes,
-        delete!</button> </a>
+
+
+<form method="POST">
+    <input type="submit" value="Yes, delete">
+
+</form>
 <a href="http://127.0.0.1:5000//articles/{{article.articleid}}/view"><button>No, return!</button></a>
-
 {% endblock %}

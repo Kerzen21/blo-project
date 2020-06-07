@@ -275,22 +275,22 @@ def user_edit_comment(articleid, commentid):
 
 
 
-
+  
 @app.route("/articles/<int:articleid>/view/comments/<int:commentid>/delete", methods=["GET", "POST"])      
 @login_required
 def comment_delete(articleid, commentid):
     if request.method == "GET":
-        return render_template("comments/delete.html", article=dao.ArticleDAO.get(articleid) , comment=dao.CommentDAO.get(commentid))
-    else: 
+        return render_template("comments/delete.html", article=dao.ArticleDAO.get(articleid), comment = dao.CommentDAO.get(commentid))
+    else:
         comment = dao.CommentDAO.get(commentid)
-        if dao.HelperDAO.userid_comment(commentid) == dao.HelperDAO.userid_logged_in(session["user"]["username"]): 
-            if 'confirmation' in request.args:
+        is_comment_author = dao.HelperDAO.userid_comment(commentid) == dao.HelperDAO.userid_logged_in(session["user"]["username"])
+        is_article_author = dao.HelperDAO.userid_article(articleid) == dao.HelperDAO.userid_logged_in(session["user"]["username"])
+        if is_comment_author or is_article_author: 
                 dao.CommentDAO.delete(comment)
                 flash(f"The Comment with id <{commentid}> has been deleted!")
         else:
             flash(f"The Comment with id <{commentid}> is not yours!")
-        return redirect("/articles/" + str(articleid) + "/view/")
-
+        return redirect("/articles/" + str(articleid) + "/view")
 
 
 

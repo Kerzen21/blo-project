@@ -14,25 +14,11 @@ Keywords:
 <br>
 <br>
 <b>Comments:</b>
-{% for comment in comments %}
-{% if session.get("user") %}
-{% if comment.userid == session["user"]["userid"] %}
-<a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img
-        src="{{url_for('static', filename='images/edit-icon.png')}}" alt="Edit"></a>
+<br>
 
-<a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/delete"><img
-        src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
-</form>
-{% endif %}
-{% endif %}
-<br>
-{{comment.author}}
-<b> | </b>
-{{comment.message}}
-<b> | </b>
-{{comment.date}}
-{% endfor %}
-<br>
+
+{% include "comments/list.html" %}
+
 
 
 

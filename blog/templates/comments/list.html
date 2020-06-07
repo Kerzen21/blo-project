@@ -1,27 +1,30 @@
 {% extends "comments/base.html" %}
-{% block content %}
+{% block comment %}
 {% if comments %}
 {% for comment in comments %}
 
 <div class="comment_list_item">
 
 
-{{comment.author}}
-<b> | </b>
-{{comment.title}}
-<b> | </b>
-{{comment.date}}
+        {{comment.author}}
+        <b> | </b>
+        {{comment.title}}
+        <b> | </b>
+        {{comment.date}}
 
-    {% if session.get("user") %}
-    {% if comment.userid == session["user"]["userid"] %}
-    <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
-            alt="Edit"></a>
+        {% if session.get("user") %}
+        {% if comment.userid == session["user"]["userid"] %}
+        <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img
+                        src="{{url_for('static', filename='images/edit-icon.png')}}" alt="Edit"></a>
 
-    <a href="/comments/delete?id={{comment.commentid}}"><img
-            src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+        <a href="/comments/delete?id={{comment.commentid}}"><img
+                        src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
 
-    {% endif %}
-    {% endif %}
+        {% elif article.userid == session["user"]["userid"] %}
+        <a href="/comments/delete?id={{comment.commentid}}"><img
+                        src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+        {% endif %}
+        {% endif %}
 </div>
 {% endfor %}
 
