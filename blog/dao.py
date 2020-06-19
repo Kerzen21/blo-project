@@ -301,6 +301,8 @@ class HelperDAO(DAO):
     def userid_logged_in(cls, username):
         con = cls.get_connection()
         userid_tuple = do_select(con, "SELECT userid FROM Users WHERE username=?", [username])
+        if userid_tuple is None:
+            return None
         userid_logged_in = userid_tuple[0]
         print(userid_logged_in)
         return userid_logged_in
@@ -341,3 +343,5 @@ class HelperDAO(DAO):
             return None
         userid_comment = userid_comment_tuple[0]
         return userid_comment
+
+    

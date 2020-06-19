@@ -63,3 +63,11 @@
             - create a section to list comments of an article
             - create a section to add a new comment on an article
             - create the add comment section on the article page
+Additional Features:
+1.Up-Down Vote Function + Vote Score
+-Each User can Like/Dislike every Comment and Article Once / They may also withdraw their vote later on
+-Copy Paste(Photo)  from reddit Up/Downvotes
+- Each Article has a list of Userids whom have up and downvoted
+E.g
+Article12: upvote[1, 2, 7, 6] / Downvote[5] -->Score = 3(Upvote-Downvote)  | Score < 0 --> Score = <1
+

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `Articles` (
 -- userid : 4
 
 
+
 CREATE TABLE IF NOT EXISTS `Comments` (
 	`commentid` INTEGER,
 	`articleid` INTEGER,
@@ -39,4 +40,31 @@ CREATE TABLE IF NOT EXISTS `Comments` (
 	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON DELETE CASCADE
 	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON UPDATE CASCADE
 );
+
+--usersnames = [ 1, 2,,3 ,3 3, ]
+
+--votes_aritcle1 = upvote:[1, 2, 3, 4] + downvote:[5, 4, 56, 67]
+
+CREATE TABLE IF NOT EXISTS `Upvotes` (
+	`articleid` INTEGER,
+	`commentid` INTEGER,
+	`userid` INTEGER
+	FOREIGN KEY (userid) REFERENCES User(userid) ON DELETE SET NULL
+	FOREIGN KEY (userid) REFERENCES User(userid) ON UPDATE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON DELETE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON UPDATE CASCADE
+	FOREIGN KEY (commentid) REFERENCES Comments(commentid) ON DELETE CASCADE
+	FOREIGN KEY (commentid) REFERENCES Comments(commentid) ON UPDATE CASCADE
+);	
+CREATE TABLE IF NOT EXISTS `Downvotes` (
+	`articleid` INTEGER,
+	`commentid` INTEGER,
+	`userid` INTEGER
+	FOREIGN KEY (userid) REFERENCES User(userid) ON DELETE SET NULL
+	FOREIGN KEY (userid) REFERENCES User(userid) ON UPDATE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON DELETE CASCADE
+	FOREIGN KEY (articleid) REFERENCES Articles(articleid) ON UPDATE CASCADE
+	FOREIGN KEY (commentid) REFERENCES Comments(commentid) ON DELETE CASCADE
+	FOREIGN KEY (commentid) REFERENCES Comments(commentid) ON UPDATE CASCADE
+);	
 COMMIT;

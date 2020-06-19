@@ -39,6 +39,8 @@ class Article(object):
         self.articleid = articleid
         # author is not saved in the database!!!
         self.author = None
+        # self.upvotes = [(2, 2, 1,)]
+        # self.downvotes = [(1, 2, 2,)]
 
     def __str__(self):
         return "Article<" + str(self.articleid) + ": " + str(self.userid) + " - " + str(self.title) + " " + str(self.message) + " - " + str(self.keywords) + " - " + str(self.date) + ">"
@@ -61,3 +63,14 @@ class Comment(object):
         return self.__str__()
     
 
+class Vote(object):
+    def __init__(self, userid, upvote=None, downvote=None, articleid=None, commentid=None): #Upvote/Downvote is Bolean | Article/Commentid is IDs
+        self.userid = userid
+        self.upvote = upvote
+        self.downvote = downvote
+        self.articleid = articleid
+        self.commentid = commentid
+    def __str__(self):
+        return "Vote<" + str(self.userid) + ":" + str(self.upvote) + "/" + str(self.downvote) + "|" + str(self.articleid) + "/" + str(self.commentid) + ">"
+    def __repr__(self):
+        return self.__str__()    

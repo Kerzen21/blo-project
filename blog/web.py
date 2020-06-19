@@ -69,7 +69,7 @@ def login():
         
             flash("Login succesfull")
             session[LOGGED_IN_KEY] = True   #sollte mit session.get geholt werden
-            session["user"] = {"username" : username, "userid" : dao.HelperDAO.userid_logged_in(username)}
+            session["user"] = {"username" : username, "userid" : dao.HelperDAO.userid_logged_in(username), "is_admin" : dao.UserDAO.get(dao.HelperDAO.userid_logged_in(username)).is_admin}
             print(request.args, "but going back to the homepage")
             next_url = request.args.get("next", "/")
 
@@ -79,7 +79,7 @@ def login():
             flash("Username or Password invalid")
         return redirect(url_for("login", **request.args))
 
-
+#print(session["user"]["is_admin"])
 
 @app.route('/register', methods=["POST", "GET"])
 def register():
@@ -104,6 +104,11 @@ def register():
         else:
             flash("The Passwords do not match!")
             return redirect("/register")
+
+
+if dao.HelperDAO.userid_logged_in("Super-Admin") is  None:
+    super_admin = models.User("Super-Admin", "123", is_logged_in = False, is_admin = True) # Which element is not unique?
+    dao.UserDAO.save(super_admin)
 
 def login_required(f):
     @wraps(f)
@@ -147,6 +152,8 @@ def user_add_article():
         article = models.Article(title, message, keywords, userid, str(date))
         dao.ArticleDAO.save(article)
         flash(f"The Article has been posted!")
+        flash(session["user"]["is_admin"])
+
         print(request.form) 
         return redirect("/articles/list")
 
@@ -217,7 +224,7 @@ def articles_delete():
     articleid = request.args.get("id")
     if 'confirmation' in request.args:
         article = dao.ArticleDAO.get(articleid)
-        if dao.HelperDAO.vgl(articleid, session["user"]["username"]):
+        if dao.HelperDAO.vgl(articleid, session["user"]["username"]) or session["user"]["is_admin"]:
             dao.ArticleDAO.delete(article)
             flash(f"The Article with id <{articleid}> has been deleted!")
             return redirect("/articles/list")
@@ -285,7 +292,7 @@ def comment_delete(articleid, commentid):
         comment = dao.CommentDAO.get(commentid)
         is_comment_author = dao.HelperDAO.userid_comment(commentid) == dao.HelperDAO.userid_logged_in(session["user"]["username"])
         is_article_author = dao.HelperDAO.userid_article(articleid) == dao.HelperDAO.userid_logged_in(session["user"]["username"])
-        if is_comment_author or is_article_author: 
+        if is_comment_author or is_article_author or  session["user"]["is_admin"]: 
                 dao.CommentDAO.delete(comment)
                 flash(f"The Comment with id <{commentid}> has been deleted!")
         else:
@@ -301,7 +308,6 @@ def article_view(articleid):
         comments = dao.CommentDAO.get_all(articleid)
         return render_template("/articles/view.html", article=article, comments=comments)
         
-
 
 @app.route("/logout")      
 def logout():

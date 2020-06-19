@@ -6,23 +6,25 @@
 <div class="article_list_item">
 
 
-{{article.author}}
-<b> | </b>
-{{article.title}}
-<b> | </b>
-{{article.date}}
-<a href="/articles/{{article.articleid}}/view?"><img src="{{url_for('static', filename='images/view-icon.png')}}"
-        alt="View"></a>
-    {% if session.get("user") %}
-    {% if article.userid == session["user"]["userid"] or session["user"]["is_admin"] == True %}
-    <a href="/articles/{{article.articleid}}/edit?"><img src="{{url_for('static', filename='images/edit-icon.png')}}"
-            alt="Edit"></a>
+        {{article.author}}
+        <b> | </b>
+        {{article.title}}
+        <b> | </b>
+        {{article.date}}
+        <a href="/articles/{{article.articleid}}/view?"><img
+                        src="{{url_for('static', filename='images/view-icon.png')}}" alt="View"></a>
+        {% if session.get("user") %}
+        {% if article.userid == session["user"]["userid"] %}
+        <a href="/articles/{{article.articleid}}/edit?"><img
+                        src="{{url_for('static', filename='images/edit-icon.png')}}" alt="Edit"></a>
 
-    <a href="/articles/delete?id={{article.articleid}}"><img
-            src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
 
-    {% endif %}
-    {% endif %}
+        {% endif %}
+        {% if session["user"]["is_admin"] or  article.userid == session["user"]["userid"]%}
+        <a href="/articles/delete?id={{article.articleid}}"><img
+                        src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
+        {% endif %}
+        {% endif %}
 </div>
 {% endfor %}
 

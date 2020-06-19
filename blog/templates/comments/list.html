@@ -20,7 +20,7 @@
         <a href="/comments/delete?id={{comment.commentid}}"><img
                         src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
 
-        {% elif article.userid == session["user"]["userid"] %}
+        {% elif article.userid == session["user"]["userid"] or session["user"]["is_admin"]%}
         <a href="/comments/delete?id={{comment.commentid}}"><img
                         src="{{url_for('static', filename='images/delete-icon.png')}}" alt="Delete"></a><br>
         {% endif %}
