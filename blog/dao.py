@@ -286,6 +286,28 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
                     comment.author = UserDAO.get(userid).username
         return all_comments
 
+class VoteDAO(DAO):
+    @classmethod
+    def user_vote_article(cls, userid, articleid, is_upvote=False):
+        con = cls.get_connection()
+        previous_vote = do_select(con, "SELECT upvote, downvote FROM Votes WHERE articleid=? and userid=?", [articleid, userid])
+        if previous_vote is not None:
+            upvote = previous_vote[0]
+            downvote = previous_vote[1]
+            if upvote == True and is_upvote == True:
+                do_update(con, "UPDATE ")
+#Das hier fertig mit allen möglichkeiten, dann nochmalfür COmmentare und dann Score, wie in der md datei beschrieben!
+
+# /articles/$articleid/view
+# Article: bla bla bla
+# votes: [Up]:/articles/$article/vote?upvote ... [Down]:/articles/$article/vote?upvote
+# 
+# 
+# /articles/$articleid/comments/$commentid
+# Comment: bla bla bla
+# votes: [Up] ... [Down]
+
+
 
 class HelperDAO(DAO):  
     @classmethod
