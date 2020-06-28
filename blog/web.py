@@ -305,8 +305,9 @@ def comment_delete(articleid, commentid):
 def article_view(articleid):
     if request.method == "GET":
         article = dao.ArticleDAO.get(articleid)
+        score = dao.VoteDAO.get_score_article(articleid)
         comments = dao.CommentDAO.get_all(articleid)
-        return render_template("/articles/view.html", article=article, comments=comments)
+        return render_template("/articles/view.html", article=article, comments=comments, score=score)
         
 
 @app.route("/logout")      

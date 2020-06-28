@@ -294,8 +294,113 @@ class VoteDAO(DAO):
         if previous_vote is not None:
             upvote = previous_vote[0]
             downvote = previous_vote[1]
+            new_upvote = False
+            new_downvote = False
             if upvote == True and is_upvote == True:
-                do_update(con, "UPDATE ")
+                new_upvote = False
+                new_downvote = False
+
+            if upvote == False and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if upvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = True
+
+            if upvote == False and downvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = False
+            
+
+            if downvote == True and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if downvote == False and upvote == False and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if downvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = False
+
+            if downvote == False and upvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = True
+            do_update(con, "UPDATE upvote=?, downvote=? FROM Votes WHERE articleid=? and userid=?", [new_upvote, new_downvote, articleid, userid])
+
+        else:
+            new_upvote = is_upvote
+            new_downvote = not is_upvote
+            # insert into table table_name (col1, col2, ...) values (value1, value2, ...);
+                
+            do_insert(con, "INSERT INTO Votes(upvote, downvote, articleid, userid) VALUES(?, ?, ?, ?)", [new_upvote, new_downvote, articleid, userid])
+
+        return new_upvote, new_downvote
+    @classmethod
+    def user_vote_comment(cls, userid, commentid, is_upvote=False):
+        con = cls.get_connection()
+        previous_vote = do_select(con, "SELECT upvote, downvote FROM Votes WHERE commentid=? and userid=?", [commentid, userid])
+        if previous_vote is not None:
+            upvote = previous_vote[0]
+            downvote = previous_vote[1]
+            new_upvote = False
+            new_downvote = False
+            if upvote == True and is_upvote == True:
+                new_upvote = False
+                new_downvote = False
+
+            if upvote == False and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if upvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = True
+
+            if upvote == False and downvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = False
+            
+
+            if downvote == True and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if downvote == False and upvote == False and is_upvote == True:
+                new_upvote = True
+                new_downvote = False
+
+            if downvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = False
+
+            if downvote == False and upvote == True and is_upvote == False:
+                new_upvote = False
+                new_downvote = True
+            do_update(con, "UPDATE upvote=?, downvote=? FROM Votes WHERE articleid=? and userid=?", [new_upvote, new_downvote, commentid, userid])
+
+        else:
+            new_upvote = is_upvote
+            new_downvote = not is_upvote
+                
+            do_insert(con, "INSERT INTO Votes(upvote, downvote, articleid, userid) VALUES(?, ?, ?, ?)", [new_upvote, new_downvote, commentid, userid])
+        return new_upvote, new_downvote
+
+    @classmethod
+    def get_score_article(cls, articleid):
+        con = cls.get_connection()
+        score = do_select(con, "SELECT sum(upvote)-sum(downvote) From Votes WHERE articleid=?", [articleid], fetchall=False)
+        return score
+
+    @classmethod
+    def get_score_comment(cls, commentid):
+        con = cls.get_connection()
+        score = do_select(con, "SELECT sum(upvote)-sum(downvote) From Votes WHERE commentid=?", [commentid], fetchall=False)
+        return score 
+#[(up1, down1), (etc)]
+
 #Das hier fertig mit allen möglichkeiten, dann nochmalfür COmmentare und dann Score, wie in der md datei beschrieben!
 
 # /articles/$articleid/view
