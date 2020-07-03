@@ -8,8 +8,16 @@
 <br>
 {{article.message}}
 <br>
-{{score}}
+Voting-Score:
 <br>
+{% if article_score < 1 %}
+Score &lt; 1
+{% else %}
+{{article_score}}
+{% endif %}
+<br>
+<a href="/articles/{{article.articleid}}/view/upvote"><button>Upvote!</button> </a>
+<a href="/articles/{{article.articleid}}/view/downvote"><button>Downvote!</button> </a>
 <br>
 Keywords:
 <br>

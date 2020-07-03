@@ -3,6 +3,9 @@
 {% if comments %}
 {% for comment in comments %}
 
+
+
+
 <div class="comment_list_item">
 
 
@@ -11,7 +14,18 @@
         {{comment.title}}
         <b> | </b>
         {{comment.date}}
-
+        Voting-Score:
+        <br>
+        {% for comment_score in comment_score_list.0 %}
+        {% if comment_score < 1 %}
+        Score &lt; 1
+        {% else %}
+        {{comment_score}}
+        {% endif %}
+        {% endfor %}
+        <br>
+        <a href="/articles/{{article.articleid}}/view/upvote"><button>Upvote!</button> </a>
+        <a href="/articles/{{article.articleid}}/view/downvote"><button>Downvote!</button> </a>
         {% if session.get("user") %}
         {% if comment.userid == session["user"]["userid"] %}
         <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img

@@ -280,10 +280,11 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
             comment  = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
             all_comments.append(comment)
             if include_all:
+                comment.score = 0 #get score for comment with the commentid: commentid
                 if userid is None:
                     comment.author = "Anonymous User"
                 else:
-                    comment.author = UserDAO.get(userid).username
+                    comment.author = UserDAO.get(userid).username+
         return all_comments
 
 class VoteDAO(DAO):
@@ -328,7 +329,8 @@ class VoteDAO(DAO):
             if downvote == False and upvote == True and is_upvote == False:
                 new_upvote = False
                 new_downvote = True
-            do_update(con, "UPDATE upvote=?, downvote=? FROM Votes WHERE articleid=? and userid=?", [new_upvote, new_downvote, articleid, userid])
+            #update tablename set column=?, column2=? where 1=1;
+            do_update(con, "UPDATE Votes set upvote=?, downvote=? WHERE articleid=? and userid=?", [new_upvote, new_downvote, articleid, userid])
 
         else:
             new_upvote = is_upvote
@@ -379,7 +381,7 @@ class VoteDAO(DAO):
             if downvote == False and upvote == True and is_upvote == False:
                 new_upvote = False
                 new_downvote = True
-            do_update(con, "UPDATE upvote=?, downvote=? FROM Votes WHERE articleid=? and userid=?", [new_upvote, new_downvote, commentid, userid])
+            do_update(con, "UPDATE Votes set upvote=?, downvote=? WHERE commentid=? and userid=?", [new_upvote, new_downvote, commentid, userid])
 
         else:
             new_upvote = is_upvote
@@ -392,13 +394,20 @@ class VoteDAO(DAO):
     def get_score_article(cls, articleid):
         con = cls.get_connection()
         score = do_select(con, "SELECT sum(upvote)-sum(downvote) From Votes WHERE articleid=?", [articleid], fetchall=False)
-        return score
+
+        if score[0] is not None:
+            return score[0]
+        else:
+            return 0
 
     @classmethod
     def get_score_comment(cls, commentid):
         con = cls.get_connection()
         score = do_select(con, "SELECT sum(upvote)-sum(downvote) From Votes WHERE commentid=?", [commentid], fetchall=False)
-        return score 
+        if score[0] is not None:
+            return score[0]
+        else:
+            return 0
 #[(up1, down1), (etc)]
 
 #Das hier fertig mit allen möglichkeiten, dann nochmalfür COmmentare und dann Score, wie in der md datei beschrieben!
