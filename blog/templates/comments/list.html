@@ -16,16 +16,16 @@
         {{comment.date}}
         Voting-Score:
         <br>
-        {% for comment_score in comment_score_list.0 %}
-        {% if comment_score < 1 %}
+        {% if comment.score < 1 %}
         Score &lt; 1
         {% else %}
-        {{comment_score}}
+        {{comment.score}}
         {% endif %}
-        {% endfor %}
         <br>
-        <a href="/articles/{{article.articleid}}/view/upvote"><button>Upvote!</button> </a>
-        <a href="/articles/{{article.articleid}}/view/downvote"><button>Downvote!</button> </a>
+        <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/upvote"><button>Upvote!</button>
+        </a>
+        <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/downvote"><button>Downvote!</button>
+        </a>
         {% if session.get("user") %}
         {% if comment.userid == session["user"]["userid"] %}
         <a href="/articles/{{article.articleid}}/view/comments/{{comment.commentid}}/edit"><img

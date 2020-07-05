@@ -306,18 +306,13 @@ def article_view(articleid):
     if request.method == "GET":
         article = dao.ArticleDAO.get(articleid)
         # article.score = 23324
-
         article_score = dao.VoteDAO.get_score_article(articleid)
-        comments = dao.CommentDAO.get_all(articleid)
-        comment_score_list = []
-        for comment in comments:
-            comment_score = dao.VoteDAO.get_score_comment(comment.commentid)
-            comment.comment_score = ...
-            comment_score_list.append(comment_score)
-        return render_template("/articles/view.html", article=article, comments=comments, article_score=article_score, comment_score_list=comment_score_list)
+        comments = dao.CommentDAO.get_all(articleid, True)
+        print(comments)
+        return render_template("/articles/view.html", article=article, comments=comments, article_score=article_score)
 
 
-
+#Comment<1: Tim     Tester 1 - 03/07/2020 - 0>
 
 
 
@@ -349,9 +344,9 @@ def downvote_article(articleid):
 @login_required
 def upvote_comment(articleid, commentid):
     if request.method == "GET":
-        return render_template("articles/upvote.html", article=dao.ArticleDAO.get(articleid), comment=dao.CommentDAO.get(commentid))
+        return render_template("comments/upvote.html", article=dao.ArticleDAO.get(articleid), comment=dao.CommentDAO.get(commentid))
     else:
-        dao.VoteDAO.user_vote_article(dao.HelperDAO.userid_logged_in(session["user"]["username"]), commentid, True)
+        dao.VoteDAO.user_vote_comment(dao.HelperDAO.userid_logged_in(session["user"]["username"]), commentid, True)
         return redirect("/articles/" + str(articleid) + "/view")
 
 
@@ -359,9 +354,9 @@ def upvote_comment(articleid, commentid):
 @login_required
 def downvote_comment(articleid, commentid):
     if request.method == "GET":
-        return render_template("articles/upvote.html", article=dao.ArticleDAO.get(articleid), comment=dao.CommentDAO.get(commentid))
+        return render_template("comments/downvote.html", article=dao.ArticleDAO.get(articleid), comment=dao.CommentDAO.get(commentid))
     else:
-        dao.VoteDAO.user_vote_article(dao.HelperDAO.userid_logged_in(session["user"]["username"]), commentid, False)
+        dao.VoteDAO.user_vote_comment(dao.HelperDAO.userid_logged_in(session["user"]["username"]), commentid, False)
         return redirect("/articles/" + str(articleid) + "/view")
 
 

@@ -235,9 +235,17 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
         date = res[2]
         userid = res[3]
         articleid = res[4]
-        comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
-        if include_all:
-            comment.author = UserDAO.get(userid).author
+        if include_all == True:
+            score = VoteDAO.get_score_comment(commentid)
+            comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid, score=score)
+            comment.author = UserDAO.get(userid).username
+            user = UserDAO.get(userid)
+            if user is None:
+                comment.author = "Anonymous User"
+            else:
+                comment.author = user.username
+        else:  
+            comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
         return comment
 
     @classmethod
@@ -277,14 +285,19 @@ class CommentDAO(DAO):  #author, message, date, commentid=None
             date = comment_row[2]
             userid = comment_row[3]
             articleid = comment_row[4]
-            comment  = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
-            all_comments.append(comment)
-            if include_all:
-                comment.score = 0 #get score for comment with the commentid: commentid
-                if userid is None:
+            
+            if include_all == True:
+                score = VoteDAO.get_score_comment(commentid)
+                comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid, score=score)
+                user = UserDAO.get(userid)
+                if user is None:
                     comment.author = "Anonymous User"
                 else:
-                    comment.author = UserDAO.get(userid).username+
+                    comment.author = user.username
+            else:
+                comment = Comment(commentid=commentid, message=message, date=date, userid=userid, articleid=articleid)
+            all_comments.append(comment)    
+            
         return all_comments
 
 class VoteDAO(DAO):
@@ -387,7 +400,7 @@ class VoteDAO(DAO):
             new_upvote = is_upvote
             new_downvote = not is_upvote
                 
-            do_insert(con, "INSERT INTO Votes(upvote, downvote, articleid, userid) VALUES(?, ?, ?, ?)", [new_upvote, new_downvote, commentid, userid])
+            do_insert(con, "INSERT INTO Votes(upvote, downvote, commentid, userid) VALUES(?, ?, ?, ?)", [new_upvote, new_downvote, commentid, userid])
         return new_upvote, new_downvote
 
     @classmethod

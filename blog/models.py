@@ -49,16 +49,17 @@ class Article(object):
 
 
 class Comment(object):
-    def __init__(self, message, date, userid, articleid, commentid=None): 
+    def __init__(self, message, date, userid, articleid, score=None, commentid=None): 
         self.author = None 
         self.message =  message 
         self.date = date
         self.userid = userid
         self.articleid = articleid
+        self.score = score
         self.commentid = commentid
 
     def __str__(self):
-        return "Comment<" + str(self.commentid) + ": " + str(self.author) + " " + str(self.message) + " - " + str(self.date) + ">"
+        return "Comment<" + str(self.commentid) + ": " + str(self.author) + " " + str(self.message) + " - " + str(self.date) +  " - " + str(self.score) + ">"
     def __repr__(self):
         return self.__str__()
     
